@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nawabpur.com — Customer Portal</title>
+<style>
+  :root{
+    --navy:#0F1F3D;
+    --navy-deep:#081226;
+    --navy-mid:#16294D;
+    --gold:#C9A227;
+    --gold-soft:#E7D28A;
+    --khaki:#C9B896;
+    --khaki-pale:#F1ECDD;
+    --bg:#F7F6F2;
+    --surface:#FFFFFF;
+    --ink:#1A2238;
+    --muted:#6C7488;
+    --line:#E6E2D6;
+    --success:#1E7A34;
+    --success-bg:#E7F4EA;
+    --warn:#8A6300;
+    --warn-bg:#FBF1D6;
+    --danger:#B3261E;
+    --danger-bg:#FBE9E7;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:14.5px;
+    line-height:1.5;
+  }
+  h1,h2,h3,h4{
+    font-family:Georgia,"Times New Roman",serif;
+    font-weight:600;
+    margin:0 0 4px 0;
+    color:var(--navy);
+    letter-spacing:.2px;
+  }
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:1.6px;
+    font-size:10.5px;
+    font-weight:700;
+    color:var(--gold);
+  }
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+
+  /* ===== Top bar ===== */
+  .topbar{
+    background:var(--navy-deep);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 22px;
+    height:58px;
+    position:sticky;
+    top:0;
+    z-index:50;
+    border-bottom:1px solid rgba(201,162,39,.35);
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{
+    width:30px;height:30px;border-radius:6px;
+    background:linear-gradient(135deg,var(--gold),#a9821c);
+    display:flex;align-items:center;justify-content:center;
+    font-family:Georgia,serif;font-weight:700;color:var(--navy-deep);font-size:15px;
+  }
+  .brand-name{font-family:Georgia,serif;font-size:16px;letter-spacing:.4px;}
+  .brand-name b{color:var(--gold);}
+  .topbar-right{display:flex;align-items:center;gap:16px;font-size:13px;}
+  .status-chip{
+    display:flex;align-items:center;gap:6px;
+    background:rgba(201,162,39,.14);
+    border:1px solid rgba(201,162,39,.45);
+    color:var(--gold-soft);
+    padding:5px 11px;border-radius:20px;font-size:12px;font-weight:600;
+  }
+  .status-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
+  .user-pill{display:flex;align-items:center;gap:9px;}
+  .avatar{
+    width:30px;height:30px;border-radius:50%;
+    background:var(--khaki);color:var(--navy-deep);
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;
+  }
+  .logout{color:rgba(255,255,255,.65);text-decoration:none;font-size:12.5px;border-left:1px solid rgba(255,255,255,.2);padding-left:14px;}
+
+  /* ===== Shell ===== */
+  .shell{display:flex;min-height:calc(100vh - 58px);}
+
+  /* ===== Sidebar ===== */
+  .sidebar{
+    width:238px;flex:none;
+    background:var(--navy);
+    color:#fff;
+    padding:22px 0 18px;
+    position:sticky;top:58px;
+    height:calc(100vh - 58px);
+    overflow-y:auto;
+  }
+  .side-section-label{
+    font-size:10px;letter-spacing:1.4px;text-transform:uppercase;
+    color:rgba(255,255,255,.4);padding:0 20px;margin:18px 0 8px;
+  }
+  .side-section-label:first-child{margin-top:0;}
+  .nav-item{
+    display:flex;align-items:center;gap:11px;
+    padding:10px 20px;
+    color:rgba(255,255,255,.78);
+    text-decoration:none;
+    font-size:13.5px;font-weight:500;
+    border-left:3px solid transparent;
+    cursor:pointer;
+    transition:background .15s;
+  }
+  .nav-item:hover{background:rgba(255,255,255,.05);}
+  .nav-item.active{
+    background:rgba(201,162,39,.12);
+    border-left-color:var(--gold);
+    color:#fff;
+  }
+  .nav-item .ico{
+    width:17px;height:17px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .nav-badge{
+    margin-left:auto;font-size:10px;font-weight:700;
+    background:var(--gold);color:var(--navy-deep);
+    border-radius:20px;padding:1px 7px;
+  }
+  .nav-badge.done{background:var(--success);color:#fff;}
+
+  .progress-ring-box{
+    margin:22px 20px 0;padding:16px;
+    background:var(--navy-mid);border-radius:var(--radius);
+    text-align:center;
+  }
+  .ring{width:74px;height:74px;margin:0 auto 8px;}
+  .ring-label{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;}
+  .ring-pct{font-size:19px;font-weight:700;font-family:Georgia,serif;color:var(--gold);}
+
+  /* ===== Main ===== */
+  .main{flex:1;padding:26px 34px 70px;max-width:980px;}
+  .section{scroll-margin-top:72px;margin-bottom:34px;}
+
+  /* Ledger-style hero */
+  .hero{
+    background:
+      repeating-linear-gradient(180deg, transparent 0 27px, rgba(15,31,61,.05) 27px 28px),
+      linear-gradient(135deg, var(--navy), var(--navy-mid));
+    color:#fff;border-radius:14px;padding:26px 28px;
+    position:relative;overflow:hidden;margin-bottom:22px;
+  }
+  .hero::after{
+    content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;
+    border-radius:50%;border:1px solid rgba(201,162,39,.25);
+  }
+  .hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
+  .hero h1{color:#fff;font-size:22px;}
+  .hero p{margin:6px 0 0;color:rgba(255,255,255,.72);font-size:13.5px;max-width:520px;}
+  .hero-cta{
+    background:var(--gold);color:var(--navy-deep);border:none;
+    padding:10px 18px;border-radius:8px;font-weight:700;font-size:13px;
+    white-space:nowrap;
+  }
+
+  /* Stepper */
+  .stepper{display:flex;margin-top:24px;position:relative;}
+  .step{flex:1;text-align:center;position:relative;}
+  .step .dot{
+    width:30px;height:30px;border-radius:50%;
+    background:var(--navy-deep);border:2px solid rgba(255,255,255,.25);
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 8px;font-size:12.5px;font-weight:700;color:rgba(255,255,255,.6);
+    position:relative;z-index:2;
+  }
+  .step.complete .dot{background:var(--success);border-color:var(--success);color:#fff;}
+  .step.current .dot{background:var(--gold);border-color:var(--gold);color:var(--navy-deep);
+    box-shadow:0 0 0 5px rgba(201,162,39,.22);}
+  .step .line{
+    position:absolute;top:15px;left:-50%;width:100%;height:2px;
+    background:rgba(255,255,255,.18);z-index:1;
+  }
+  .step:first-child .line{display:none;}
+  .step.complete .line{background:var(--success);}
+  .step-label{font-size:11.5px;color:rgba(255,255,255,.85);font-weight:600;}
+  .step-sub{font-size:10px;color:rgba(255,255,255,.45);margin-top:2px;}
+
+  /* Cards */
+  .card{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);padding:22px 24px;margin-bottom:16px;
+  }
+  .card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+  .card-head p{margin:4px 0 0;color:var(--muted);font-size:13px;max-width:560px;}
+  .pill{
+    font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;
+    display:inline-flex;align-items:center;gap:5px;
+  }
+  .pill.pending{background:var(--warn-bg);color:var(--warn);}
+  .pill.verified{background:var(--success-bg);color:var(--success);}
+  .pill.rejected{background:var(--danger-bg);color:var(--danger);}
+
+  /* KYC grid */
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;margin-bottom:18px;}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--navy);margin-bottom:5px;}
+  .field label .req{color:var(--danger);}
+  .field input, .field select, .field textarea{
+    width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:7px;
+    font-size:13px;font-family:inherit;background:#FCFBF9;color:var(--ink);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline:2px solid var(--gold-soft);outline-offset:0;border-color:var(--gold);
+  }
+  .field .hint{font-size:11px;color:var(--muted);margin-top:4px;}
+  .full{grid-column:1/-1;}
+
+  .divider-label{
+    display:flex;align-items:center;gap:10px;margin:22px 0 14px;
+    font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--navy);
+  }
+  .divider-label::after{content:"";flex:1;height:1px;background:var(--line);}
+
+  /* Upload dropzones */
+  .upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .dropzone{
+    border:1.5px dashed var(--khaki);border-radius:9px;
+    padding:14px;background:var(--khaki-pale);
+  }
+  .dz-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .dz-title span.name{font-size:12.5px;font-weight:700;color:var(--navy);}
+  .dz-empty{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:6px;padding:14px 8px;text-align:center;color:var(--muted);font-size:12px;
+    border:1px dashed var(--line);border-radius:7px;background:#fff;
+  }
+  .dz-empty button{
+    margin-top:4px;background:var(--navy);color:#fff;border:none;
+    padding:6px 13px;border-radius:6px;font-size:11.5px;font-weight:600;
+  }
+  .dz-file{
+    display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line);
+    border-radius:7px;padding:9px 10px;
+  }
+  .dz-file .fico{
+    width:30px;height:30px;border-radius:6px;background:var(--success-bg);color:var(--success);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none;
+  }
+  .dz-file .finfo{flex:1;min-width:0;}
+  .dz-file .fname{font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .dz-file .fmeta{font-size:10.5px;color:var(--muted);}
+  .dz-file .freplace{background:none;border:none;color:var(--navy);font-size:11px;font-weight:700;text-decoration:underline;}
+
+  /* Buttons */
+  .btn-primary{
+    background:var(--gold);color:var(--navy-deep);border:none;
+    padding:10px 20px;border-radius:8px;font-weight:700;font-size:13px;
+  }
+  .btn-primary:disabled{background:#E5DFC9;color:#9A967F;cursor:not-allowed;}
+  .btn-outline{
+    background:#fff;color:var(--navy);border:1.5px solid var(--navy);
+    padding:9px 18px;border-radius:8px;font-weight:700;font-size:13px;
+  }
+  .btn-ghost{background:none;border:none;color:var(--navy);font-weight:700;font-size:12.5px;text-decoration:underline;}
+
+  /* Contract */
+  .contract-box{
+    border:1px solid var(--line);border-radius:9px;padding:18px 20px;
+    background:repeating-linear-gradient(180deg, transparent 0 25px, rgba(15,31,61,.035) 25px 26px);
+    max-height:230px;overflow-y:auto;font-size:12.5px;color:var(--ink);
+  }
+  .contract-box h4{font-size:12.5px;margin:14px 0 4px;color:var(--navy);}
+  .contract-box p{margin:0 0 8px;color:#3a4257;}
+  .sig-row{display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;align-items:flex-end;}
+  .sig-field{flex:1;min-width:220px;}
+  .sig-pad{
+    border-bottom:2px solid var(--navy);padding:14px 4px 6px;
+    font-family:'Brush Script MT', cursive, Georgia, serif;font-size:20px;color:var(--navy);
+    min-height:20px;
+  }
+  .checkline{display:flex;align-items:flex-start;gap:9px;margin-top:14px;font-size:12.5px;color:var(--ink);}
+  .checkline input{margin-top:2px;}
+
+  /* Terms */
+  .terms-box{
+    border:1px solid var(--line);border-radius:9px;padding:6px 20px;
+    max-height:280px;overflow-y:auto;background:#FCFBF9;
+  }
+  .term-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:12.5px;}
+  .term-item:last-child{border-bottom:none;}
+  .term-num{
+    flex:none;width:22px;height:22px;border-radius:50%;background:var(--navy);color:var(--gold-soft);
+    font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  .term-item p{margin:0;color:#3a4257;}
+
+  /* Payment register table */
+  table.reg{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.reg thead th{
+    text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;
+    color:var(--muted);font-weight:700;padding:0 10px 10px;border-bottom:2px solid var(--navy);
+  }
+  table.reg tbody td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  table.reg tbody tr:hover{background:#FBFAF7;}
+  .amt{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:600;}
+  .att-chip{
+    display:inline-flex;align-items:center;gap:6px;background:var(--success-bg);color:var(--success);
+    border-radius:16px;padding:4px 10px;font-size:11px;font-weight:700;
+  }
+  .att-missing{
+    display:inline-flex;align-items:center;gap:6px;background:var(--warn-bg);color:var(--warn);
+    border-radius:16px;padding:4px 10px;font-size:11px;font-weight:700;border:none;cursor:pointer;
+  }
+  .row-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:14px;}
+
+  .footnote{font-size:11.5px;color:var(--muted);margin-top:6px;}
+
+  @media (max-width:900px){
+    .sidebar{display:none;}
+    .field-grid, .upload-grid{grid-template-columns:1fr;}
+    .main{padding:20px 16px 60px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">N</div>
+    <div class="brand-name">nawabpur<b>.com</b></div>
+  </div>
+  <div class="topbar-right">
+    <div class="status-chip"><span class="status-dot"></span>Phase 2 · KYC Pending</div>
+    <div class="user-pill">
+      <div class="avatar">GD</div>
+      <span>Green Delta Textiles Ltd</span>
+    </div>
+    <a class="logout" href="#">Sign out</a>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="side-section-label">Account</div>
+    <a class="nav-item active" data-target="overview"><span class="ico">&#9673;</span> Overview</a>
+
+    <div class="side-section-label">Phase 2 — Compliance</div>
+    <a class="nav-item" data-target="kyc"><span class="ico">&#128196;</span> KYC Verification <span class="nav-badge">3/5</span></a>
+    <a class="nav-item" data-target="contract"><span class="ico">&#9998;</span> Contract &amp; Agreement <span class="nav-badge">Pending</span></a>
+    <a class="nav-item" data-target="terms"><span class="ico">&#128220;</span> Terms &amp; Conditions <span class="nav-badge">Pending</span></a>
+
+    <div class="side-section-label">Trading</div>
+    <a class="nav-item" data-target="payments"><span class="ico">&#128176;</span> Payment Register</a>
+
+    <div class="progress-ring-box">
+      <svg class="ring" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="8"/>
+        <circle id="ringFg" cx="40" cy="40" r="34" fill="none" stroke="#C9A227" stroke-width="8"
+          stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="128"
+          transform="rotate(-90 40 40)"/>
+        <text x="40" y="45" text-anchor="middle" fill="#C9A227" font-family="Georgia,serif" font-size="16" font-weight="700">40%</text>
+      </svg>
+      <div class="ring-label">Onboarding complete</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- OVERVIEW -->
+    <div class="section" id="overview">
+      <div class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="eyebrow">Welcome back</div>
+            <h1>Green Delta Textiles Ltd</h1>
+            <p>Your account is registered and browsing-enabled. Complete Phase 2 to unlock ordering,
+              credit terms, and your NBR-compliant Mushak 6.3 invoicing.</p>
+          </div>
+          <button class="hero-cta" onclick="scrollToSection('kyc')">Continue Phase 2 →</button>
+        </div>
+
+        <div class="stepper">
+          <div class="step complete">
+            <div class="line"></div>
+            <div class="dot">✓</div>
+            <div class="step-label">Phase 1</div>
+            <div class="step-sub">Registered 10 Feb 2024</div>
+          </div>
+          <div class="step current">
+            <div class="line"></div>
+            <div class="dot">2</div>
+            <div class="step-label">KYC Verification</div>
+            <div class="step-sub">3 of 5 documents received</div>
+          </div>
+          <div class="step">
+            <div class="line"></div>
+            <div class="dot">3</div>
+            <div class="step-label">Contract Signed</div>
+            <div class="step-sub">Not started</div>
+          </div>
+          <div class="step">
+            <div class="line"></div>
+            <div class="dot">4</div>
+            <div class="step-label">Verified &amp; Trading</div>
+            <div class="step-sub">Locked</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3>What's outstanding</h3>
+            <p>Finish these to unlock full trading and credit terms.</p>
+          </div>
+        </div>
+        <div class="field-grid" style="grid-template-columns:1fr 1fr 1fr;">
+          <div class="dropzone" style="text-align:left;">
+            <div class="dz-title"><span class="name">Upload NID (Back)</span><span class="pill pending">Missing</span></div>
+            <div class="footnote">Required to complete document set 3/5.</div>
+          </div>
+          <div class="dropzone" style="text-align:left;">
+            <div class="dz-title"><span class="name">Sign Contract &amp; Agreement</span><span class="pill pending">Pending</span></div>
+            <div class="footnote">Review terms and provide e-signature.</div>
+          </div>
+          <div class="dropzone" style="text-align:left;">
+            <div class="dz-title"><span class="name">Accept Terms &amp; Conditions</span><span class="pill pending">Pending</span></div>
+            <div class="footnote">13-clause platform trading terms.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KYC -->
+    <div class="section" id="kyc">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">Phase 2 · Step 1</div>
+            <h3>KYC &amp; Corporate Verification</h3>
+            <p>Complete your statutory profile so Admin can verify your BIN, RJSC and withholding status against the NBR portal.</p>
+          </div>
+          <span class="pill pending">3 of 5 documents received</span>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label>Business Identification Number — BIN <span class="req">*</span></label>
+            <input class="mono" type="text" value="0012345678901" maxlength="13">
+            <div class="hint">13 digits, used for automated Mushak 6.3 processing.</div>
+          </div>
+          <div class="field">
+            <label>E-TIN Certificate No.</label>
+            <input class="mono" type="text" value="ETIN-778812345">
+          </div>
+          <div class="field">
+            <label>Registered HQ / Billing Address</label>
+            <input type="text" value="Plot 14, Tejgaon I/A, Dhaka">
+          </div>
+          <div class="field">
+            <label>Delivery Destination(s)</label>
+            <input type="text" placeholder="e.g. Gazipur Plant 1 — add up to 20">
+          </div>
+          <div class="field">
+            <label>Is your organization an NBR VAT Withholding Entity?</label>
+            <select>
+              <option>Yes — registered withholding agent</option>
+              <option>No</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Expected Monthly Purchase Volume</label>
+            <select>
+              <option>500K to 2M BDT</option>
+              <option>Below 100K BDT</option>
+              <option>100K to 500K BDT</option>
+              <option>Above 2M BDT</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Accounts Payable Contact — Name</label>
+            <input type="text" value="Sultana Parvin">
+          </div>
+          <div class="field">
+            <label>Accounts Payable Contact — Phone / Email</label>
+            <input type="text" value="01911-000011 · sultana@greendeltatex.example">
+          </div>
+        </div>
+
+        <div class="divider-label">Statutory documents</div>
+        <div class="upload-grid">
+          <div class="dropzone">
+            <div class="dz-title"><span class="name">Trade License</span><span class="pill verified">Verified</span></div>
+            <div class="dz-file">
+              <div class="fico">PDF</div>
+              <div class="finfo">
+                <div class="fname">Trade_License_TRAD-DNCC-045612-2024.pdf</div>
+                <div class="fmeta">Uploaded 12 Feb 2024 · 1.4 MB · Valid to 30 Jun 2027</div>
+              </div>
+              <button class="freplace">Replace</button>
+            </div>
+          </div>
+
+          <div class="dropzone">
+            <div class="dz-title"><span class="name">RJSC Certificate of Incorporation</span><span class="pill verified">Verified</span></div>
+            <div class="dz-file">
+              <div class="fico">PDF</div>
+              <div class="finfo">
+                <div class="fname">RJSC_Certificate_C-123456.pdf</div>
+                <div class="fmeta">Uploaded 12 Feb 2024 · 890 KB</div>
+              </div>
+              <button class="freplace">Replace</button>
+            </div>
+          </div>
+
+          <div class="dropzone">
+            <div class="dz-title"><span class="name">NID — Front</span><span class="pill pending">In review</span></div>
+            <div class="dz-file">
+              <div class="fico" style="background:var(--warn-bg);color:var(--warn);">JPG</div>
+              <div class="finfo">
+                <div class="fname">NID_Front_RafiqulIslam.jpg</div>
+                <div class="fmeta">Uploaded 3 Jul 2026 · 2.1 MB · Awaiting admin check</div>
+              </div>
+              <button class="freplace">Replace</button>
+            </div>
+          </div>
+
+          <div class="dropzone" id="nidBackZone">
+            <div class="dz-title"><span class="name">NID — Back <span class="req">*</span></span><span class="pill pending">Missing</span></div>
+            <div class="dz-empty">
+              <span>Drag file here, or</span>
+              <button onclick="mockUpload('nidBackZone','NID — Back')">Choose file</button>
+              <span style="font-size:10.5px;">PDF or JPG, max 5 MB</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row-actions" style="margin-top:22px;">
+          <button class="btn-outline">Save draft</button>
+          <button class="btn-primary">Submit for verification</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTRACT -->
+    <div class="section" id="contract">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">Phase 2 · Step 2</div>
+            <h3>Contract &amp; Framework Agreement</h3>
+            <p>This master agreement governs every purchase order placed on nawabpur.com once your account is verified.</p>
+          </div>
+          <span class="pill pending">Awaiting signature</span>
+        </div>
+
+        <div class="contract-box">
+          <h4>1. Parties</h4>
+          <p>This Corporate Framework Agreement is entered into between Nawabpur.com ("Seller") and
+             Green Delta Textiles Ltd, BIN 0012345678901 ("Buyer"), effective from the date of e-signature below.</p>
+          <h4>2. Scope</h4>
+          <p>Covers all purchase orders raised by the Buyer through the platform across the Buyer's approved
+             sourcing categories, including pricing, delivery, and VAT-compliant invoicing terms.</p>
+          <h4>3. Payment &amp; Credit Terms</h4>
+          <p>Standard terms: 50% advance on PO confirmation, balance 50% on confirmed delivery and GRN.
+             Net-15 day credit becomes available after 3 consecutive clean orders, subject to Admin approval.</p>
+          <h4>4. Statutory Compliance</h4>
+          <p>Buyer agrees to issue Mushak 6.6 VAT deduction certificates within 3 working days of payment where
+             applicable. Late issuance is subject to a 2% per-week penalty as set out in the Terms &amp; Conditions.</p>
+          <h4>5. Duration &amp; Termination</h4>
+          <p>This Agreement remains active for 12 months from signature and auto-renews unless either party
+             gives 30 days' written notice.</p>
+        </div>
+
+        <div class="sig-row">
+          <div class="sig-field">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--navy);margin-bottom:5px;">Authorized signatory (type full name)</label>
+            <div class="sig-pad" id="sigPad" contenteditable="true" data-placeholder="e.g. Sultana Parvin"></div>
+          </div>
+          <div class="sig-field" style="max-width:220px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--navy);margin-bottom:5px;">Designation</label>
+            <input type="text" placeholder="e.g. Procurement Manager">
+          </div>
+        </div>
+
+        <label class="checkline">
+          <input type="checkbox" id="contractAgree" onchange="toggleBtn('contractAgree','contractBtn')">
+          I confirm I am authorized to bind Green Delta Textiles Ltd to this Agreement, and the details above are accurate.
+        </label>
+
+        <div class="row-actions">
+          <button class="btn-outline">Download draft PDF</button>
+          <button class="btn-primary" id="contractBtn" disabled>Sign &amp; submit agreement</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TERMS -->
+    <div class="section" id="terms">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">Phase 2 · Step 3</div>
+            <h3>Terms &amp; Conditions</h3>
+            <p>These terms apply to every Proforma Invoice and order confirmed on nawabpur.com.</p>
+          </div>
+          <span class="pill pending">Not yet accepted</span>
+        </div>
+
+        <div class="terms-box">
+          <div class="term-item"><div class="term-num">1</div><p>This Proforma Invoice is valid for 7 calendar days from the date of issue; prices may be revised after expiry.</p></div>
+          <div class="term-item"><div class="term-num">2</div><p>Order processing and dispatch begin only after receipt of 100% advance payment, or the payment terms confirmed in writing.</p></div>
+          <div class="term-item"><div class="term-num">3</div><p>Where a Buyer PO is referenced, this Proforma Invoice is read together with it; in conflict, the Proforma Invoice prevails unless agreed otherwise in writing.</p></div>
+          <div class="term-item"><div class="term-num">4</div><p>VAT is charged at the prevailing NBR statutory rate; any rate change between invoice date and delivery is adjusted and borne by the Buyer.</p></div>
+          <div class="term-item"><div class="term-num">5</div><p>All prices are quoted in BDT and exclude transport, delivery, and handling charges unless separately itemized.</p></div>
+          <div class="term-item"><div class="term-num">6</div><p>Title to goods remains with the Seller until full and final payment is received.</p></div>
+          <div class="term-item"><div class="term-num">7</div><p>Delivery timelines are indicative estimates commencing after confirmed payment; the Seller is not liable for delays from force majeure, transport, customs, or supply constraints.</p></div>
+          <div class="term-item"><div class="term-num">8</div><p>Shortage, damage, or discrepancy claims must be raised in writing with supporting evidence within 48 hours of delivery.</p></div>
+          <div class="term-item"><div class="term-num">9</div><p>Goods delivered and accepted are not eligible for return or exchange unless agreed in writing prior to dispatch.</p></div>
+          <div class="term-item"><div class="term-num">10</div><p>The Buyer is responsible for providing accurate BIN, Mushak, and statutory documentation for VAT compliance.</p></div>
+          <div class="term-item"><div class="term-num">11</div><p>This document is a Proforma Invoice for reference only; the Tax Invoice (Mushak-6.3) is issued upon dispatch.</p></div>
+          <div class="term-item"><div class="term-num">12</div><p>Any dispute is subject to the exclusive jurisdiction of the courts of Dhaka, Bangladesh.</p></div>
+          <div class="term-item"><div class="term-num">13</div><p>Confirming an order in writing, verbally, or by payment constitutes acceptance of these Terms &amp; Conditions in full.</p></div>
+        </div>
+
+        <label class="checkline">
+          <input type="checkbox" id="termsAgree" onchange="toggleBtn('termsAgree','termsBtn')">
+          I have read and accept the Terms &amp; Conditions on behalf of Green Delta Textiles Ltd.
+        </label>
+
+        <div class="row-actions">
+          <button class="btn-primary" id="termsBtn" disabled>Accept &amp; continue</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYMENT REGISTER -->
+    <div class="section" id="payments">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">Trading</div>
+            <h3>Payment Register</h3>
+            <p>Every advance and balance payment against your orders, with its VAT withholding certificate (Mushak 6.6).</p>
+          </div>
+          <button class="btn-outline" onclick="addPaymentRow()">+ Add payment record</button>
+        </div>
+
+        <table class="reg" id="regTable">
+          <thead>
+            <tr>
+              <th>PO / Order No.</th>
+              <th>Date</th>
+              <th>Method</th>
+              <th>Ref. No.</th>
+              <th>Amount (BDT)</th>
+              <th>Mushak 6.6 No.</th>
+              <th>Attachment</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mono">PO-2026-0142</td>
+              <td>02 Jul 2026</td>
+              <td>RTGS</td>
+              <td class="mono">RTGS-88213</td>
+              <td class="amt">4,25,000</td>
+              <td class="mono">6.6-00931</td>
+              <td>
+                <span class="att-chip">📎 6.6-00931_Jul.pdf</span>
+              </td>
+              <td><span class="pill verified">Reconciled</span></td>
+            </tr>
+            <tr>
+              <td class="mono">PO-2026-0138</td>
+              <td>24 Jun 2026</td>
+              <td>NPSB</td>
+              <td class="mono">NPSB-55029</td>
+              <td class="amt">1,80,000</td>
+              <td class="mono">6.6-00887</td>
+              <td>
+                <span class="att-chip">📎 6.6-00887_Jun.pdf</span>
+              </td>
+              <td><span class="pill verified">Reconciled</span></td>
+            </tr>
+            <tr>
+              <td class="mono">PO-2026-0151</td>
+              <td>10 Jul 2026</td>
+              <td>Cheque</td>
+              <td class="mono">CHQ-004471</td>
+              <td class="amt">3,10,000</td>
+              <td class="mono">—</td>
+              <td>
+                <button class="att-missing" onclick="mockAttach(this)">📎 Upload 6.6</button>
+              </td>
+              <td><span class="pill pending">Awaiting 6.6</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="footnote">Mushak 6.6 certificates are due within 3 working days of payment. A 2% per-week penalty applies to late submission per the Terms &amp; Conditions.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Sidebar active state + smooth scroll
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item=>{
+    item.addEventListener('click',()=>scrollToSection(item.dataset.target));
+  });
+  function scrollToSection(id){
+    document.getElementById(id).scrollIntoView({behavior:'smooth'});
+  }
+  const sections = document.querySelectorAll('.section');
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        navItems.forEach(n=>n.classList.remove('active'));
+        const match = document.querySelector(`.nav-item[data-target="${e.target.id}"]`);
+        if(match) match.classList.add('active');
+      }
+    });
+  },{rootMargin:'-40% 0px -50% 0px'});
+  sections.forEach(s=>observer.observe(s));
+
+  // Mock upload: turns an empty dropzone into a "recently uploaded" file card
+  function mockUpload(zoneId,label){
+    const zone = document.getElementById(zoneId);
+    const today = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+    zone.querySelector('.pill').outerHTML = '<span class="pill pending">In review</span>';
+    zone.querySelector('.dz-empty').outerHTML = `
+      <div class="dz-file">
+        <div class="fico" style="background:var(--warn-bg);color:var(--warn);">JPG</div>
+        <div class="finfo">
+          <div class="fname">${label.replace(/\\s/g,'_')}_upload.jpg</div>
+          <div class="fmeta">Uploaded ${today} · Awaiting admin check</div>
+        </div>
+        <button class="freplace">Replace</button>
+      </div>`;
+  }
+
+  function mockAttach(btn){
+    const today = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+    btn.outerHTML = `<span class="att-chip">📎 6.6-pending_upload.pdf</span>`;
+    const row = btn.closest('tr');
+    row.querySelector('.pill').outerHTML = '<span class="pill verified">Reconciled</span>';
+  }
+
+  function toggleBtn(checkId,btnId){
+    document.getElementById(btnId).disabled = !document.getElementById(checkId).checked;
+  }
+
+  let paymentRowCount = 3;
+  function addPaymentRow(){
+    paymentRowCount++;
+    const tbody = document.querySelector('#regTable tbody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="text" placeholder="PO-2026-0${150+paymentRowCount}" style="border:1px solid var(--line);border-radius:5px;padding:5px 7px;width:110px;"></td>
+      <td><input type="date" style="border:1px solid var(--line);border-radius:5px;padding:5px 7px;"></td>
+      <td>
+        <select style="border:1px solid var(--line);border-radius:5px;padding:5px 7px;">
+          <option>RTGS</option><option>NPSB</option><option>Cheque</option><option>Local LC</option>
+        </select>
+      </td>
+      <td><input type="text" placeholder="Ref. no." style="border:1px solid var(--line);border-radius:5px;padding:5px 7px;width:110px;"></td>
+      <td><input type="text" placeholder="0" style="border:1px solid var(--line);border-radius:5px;padding:5px 7px;width:100px;" class="amt"></td>
+      <td class="mono">—</td>
+      <td><button class="att-missing" onclick="mockAttach(this)">📎 Upload 6.6</button></td>
+      <td><span class="pill pending">New</span></td>`;
+    tbody.appendChild(tr);
+  }
+</script>
+
+</body>
+</html>
